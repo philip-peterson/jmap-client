@@ -182,6 +182,8 @@
 
 #[forbid(unsafe_code)]
 pub mod blob;
+pub mod calendar;
+pub mod calendar_event;
 pub mod client;
 pub mod core;
 pub mod email;
@@ -327,6 +329,26 @@ pub enum Method {
     QueryChangesPrincipal,
     #[serde(rename = "Principal/set")]
     SetPrincipal,
+    #[serde(rename = "Calendar/get")]
+    GetCalendar,
+    #[serde(rename = "Calendar/changes")]
+    ChangesCalendar,
+    #[serde(rename = "Calendar/query")]
+    QueryCalendar,
+    #[serde(rename = "Calendar/queryChanges")]
+    QueryChangesCalendar,
+    #[serde(rename = "Calendar/set")]
+    SetCalendar,
+    #[serde(rename = "CalendarEvent/get")]
+    GetCalendarEvent,
+    #[serde(rename = "CalendarEvent/changes")]
+    ChangesCalendarEvent,
+    #[serde(rename = "CalendarEvent/query")]
+    QueryCalendarEvent,
+    #[serde(rename = "CalendarEvent/queryChanges")]
+    QueryChangesCalendarEvent,
+    #[serde(rename = "CalendarEvent/set")]
+    SetCalendarEvent,
     #[serde(rename = "error")]
     Error,
 }

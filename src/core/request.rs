@@ -11,6 +11,8 @@
 
 use crate::{
     blob::copy::CopyBlobRequest,
+    calendar::Calendar,
+    calendar_event::CalendarEvent,
     client::Client,
     email::{
         import::EmailImportRequest, parse::EmailParseRequest,
@@ -101,6 +103,14 @@ pub enum Arguments {
     PrincipalQuery(QueryRequest<Principal<Set>>),
     PrincipalQueryChanges(QueryChangesRequest<Principal<Set>>),
     PrincipalSet(SetRequest<Principal<Set>>),
+    CalendarGet(GetRequest<Calendar<Set>>),
+    CalendarQuery(QueryRequest<Calendar<Set>>),
+    CalendarQueryChanges(QueryChangesRequest<Calendar<Set>>),
+    CalendarSet(SetRequest<Calendar<Set>>),
+    CalendarEventGet(GetRequest<CalendarEvent<Set>>),
+    CalendarEventQuery(QueryRequest<CalendarEvent<Set>>),
+    CalendarEventQueryChanges(QueryChangesRequest<CalendarEvent<Set>>),
+    CalendarEventSet(SetRequest<CalendarEvent<Set>>),
 }
 
 impl Arguments {
@@ -237,6 +247,38 @@ impl Arguments {
 
     pub fn principal_set(params: RequestParams) -> Self {
         Arguments::PrincipalSet(SetRequest::new(params))
+    }
+
+    pub fn calendar_get(params: RequestParams) -> Self {
+        Arguments::CalendarGet(GetRequest::new(params))
+    }
+
+    pub fn calendar_query(params: RequestParams) -> Self {
+        Arguments::CalendarQuery(QueryRequest::new(params))
+    }
+
+    pub fn calendar_query_changes(params: RequestParams, since_query_state: String) -> Self {
+        Arguments::CalendarQueryChanges(QueryChangesRequest::new(params, since_query_state))
+    }
+
+    pub fn calendar_set(params: RequestParams) -> Self {
+        Arguments::CalendarSet(SetRequest::new(params))
+    }
+
+    pub fn calendar_event_get(params: RequestParams) -> Self {
+        Arguments::CalendarEventGet(GetRequest::new(params))
+    }
+
+    pub fn calendar_event_query(params: RequestParams) -> Self {
+        Arguments::CalendarEventQuery(QueryRequest::new(params))
+    }
+
+    pub fn calendar_event_query_changes(params: RequestParams, since_query_state: String) -> Self {
+        Arguments::CalendarEventQueryChanges(QueryChangesRequest::new(params, since_query_state))
+    }
+
+    pub fn calendar_event_set(params: RequestParams) -> Self {
+        Arguments::CalendarEventSet(SetRequest::new(params))
     }
 
     pub fn changes_mut(&mut self) -> &mut ChangesRequest {
@@ -468,6 +510,64 @@ impl Arguments {
     pub fn principal_set_mut(&mut self) -> &mut SetRequest<Principal<Set>> {
         match self {
             Arguments::PrincipalSet(ref mut r) => r,
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn calendar_get_mut(&mut self) -> &mut GetRequest<Calendar<Set>> {
+        match self {
+            Arguments::CalendarGet(ref mut r) => r,
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn calendar_query_mut(&mut self) -> &mut QueryRequest<Calendar<Set>> {
+        match self {
+            Arguments::CalendarQuery(ref mut r) => r,
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn calendar_query_changes_mut(&mut self) -> &mut QueryChangesRequest<Calendar<Set>> {
+        match self {
+            Arguments::CalendarQueryChanges(ref mut r) => r,
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn calendar_set_mut(&mut self) -> &mut SetRequest<Calendar<Set>> {
+        match self {
+            Arguments::CalendarSet(ref mut r) => r,
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn calendar_event_get_mut(&mut self) -> &mut GetRequest<CalendarEvent<Set>> {
+        match self {
+            Arguments::CalendarEventGet(ref mut r) => r,
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn calendar_event_query_mut(&mut self) -> &mut QueryRequest<CalendarEvent<Set>> {
+        match self {
+            Arguments::CalendarEventQuery(ref mut r) => r,
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn calendar_event_query_changes_mut(
+        &mut self,
+    ) -> &mut QueryChangesRequest<CalendarEvent<Set>> {
+        match self {
+            Arguments::CalendarEventQueryChanges(ref mut r) => r,
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn calendar_event_set_mut(&mut self) -> &mut SetRequest<CalendarEvent<Set>> {
+        match self {
+            Arguments::CalendarEventSet(ref mut r) => r,
             _ => unreachable!(),
         }
     }

@@ -15,6 +15,8 @@ use std::fmt;
 
 use crate::{
     blob::copy::CopyBlobResponse,
+    calendar::Calendar,
+    calendar_event::CalendarEvent,
     email::{
         import::EmailImportResponse, parse::EmailParseResponse,
         search_snippet::SearchSnippetGetResponse, Email,
@@ -138,6 +140,12 @@ pub type SieveScriptSetResponse = SetResponse<SieveScript<Get>>;
 pub type PrincipalChangesResponse = ChangesResponse<Principal<Get>>;
 pub type PrincipalSetResponse = SetResponse<Principal<Get>>;
 pub type PrincipalGetResponse = GetResponse<Principal<Get>>;
+pub type CalendarGetResponse = GetResponse<Calendar<Get>>;
+pub type CalendarSetResponse = SetResponse<Calendar<Get>>;
+pub type CalendarChangesResponse = ChangesResponse<Calendar<Get>>;
+pub type CalendarEventGetResponse = GetResponse<CalendarEvent<Get>>;
+pub type CalendarEventSetResponse = SetResponse<CalendarEvent<Get>>;
+pub type CalendarEventChangesResponse = ChangesResponse<CalendarEvent<Get>>;
 
 #[derive(Debug)]
 pub struct TaggedMethodResponse {
@@ -186,6 +194,18 @@ pub enum MethodResponse {
     QueryPrincipal(QueryResponse),
     QueryChangesPrincipal(QueryChangesResponse),
     SetPrincipal(PrincipalSetResponse),
+
+    GetCalendar(CalendarGetResponse),
+    ChangesCalendar(CalendarChangesResponse),
+    QueryCalendar(QueryResponse),
+    QueryChangesCalendar(QueryChangesResponse),
+    SetCalendar(CalendarSetResponse),
+
+    GetCalendarEvent(CalendarEventGetResponse),
+    ChangesCalendarEvent(CalendarEventChangesResponse),
+    QueryCalendarEvent(QueryResponse),
+    QueryChangesCalendarEvent(QueryChangesResponse),
+    SetCalendarEvent(CalendarEventSetResponse),
 
     Echo(serde_json::Value),
     Error(MethodError),
@@ -285,6 +305,28 @@ impl TaggedMethodResponse {
                     Method::QueryChangesPrincipal
                 )
                 | (MethodResponse::SetPrincipal(_), Method::SetPrincipal)
+                | (MethodResponse::GetCalendar(_), Method::GetCalendar)
+                | (MethodResponse::ChangesCalendar(_), Method::ChangesCalendar)
+                | (MethodResponse::QueryCalendar(_), Method::QueryCalendar)
+                | (
+                    MethodResponse::QueryChangesCalendar(_),
+                    Method::QueryChangesCalendar
+                )
+                | (MethodResponse::SetCalendar(_), Method::SetCalendar)
+                | (MethodResponse::GetCalendarEvent(_), Method::GetCalendarEvent)
+                | (
+                    MethodResponse::ChangesCalendarEvent(_),
+                    Method::ChangesCalendarEvent
+                )
+                | (
+                    MethodResponse::QueryCalendarEvent(_),
+                    Method::QueryCalendarEvent
+                )
+                | (
+                    MethodResponse::QueryChangesCalendarEvent(_),
+                    Method::QueryChangesCalendarEvent
+                )
+                | (MethodResponse::SetCalendarEvent(_), Method::SetCalendarEvent)
                 | (MethodResponse::Echo(_), Method::Echo)
                 | (MethodResponse::Error(_), Method::Error)
         )
@@ -598,6 +640,86 @@ impl TaggedMethodResponse {
         }
     }
 
+    pub fn unwrap_get_calendar(self) -> crate::Result<CalendarGetResponse> {
+        match self.response {
+            MethodResponse::GetCalendar(response) => Ok(response),
+            MethodResponse::Error(err) => Err(err.into()),
+            _ => Err("Response type mismatch".into()),
+        }
+    }
+
+    pub fn unwrap_changes_calendar(self) -> crate::Result<CalendarChangesResponse> {
+        match self.response {
+            MethodResponse::ChangesCalendar(response) => Ok(response),
+            MethodResponse::Error(err) => Err(err.into()),
+            _ => Err("Response type mismatch".into()),
+        }
+    }
+
+    pub fn unwrap_query_calendar(self) -> crate::Result<QueryResponse> {
+        match self.response {
+            MethodResponse::QueryCalendar(response) => Ok(response),
+            MethodResponse::Error(err) => Err(err.into()),
+            _ => Err("Response type mismatch".into()),
+        }
+    }
+
+    pub fn unwrap_query_changes_calendar(self) -> crate::Result<QueryChangesResponse> {
+        match self.response {
+            MethodResponse::QueryChangesCalendar(response) => Ok(response),
+            MethodResponse::Error(err) => Err(err.into()),
+            _ => Err("Response type mismatch".into()),
+        }
+    }
+
+    pub fn unwrap_set_calendar(self) -> crate::Result<CalendarSetResponse> {
+        match self.response {
+            MethodResponse::SetCalendar(response) => Ok(response),
+            MethodResponse::Error(err) => Err(err.into()),
+            _ => Err("Response type mismatch".into()),
+        }
+    }
+
+    pub fn unwrap_get_calendar_event(self) -> crate::Result<CalendarEventGetResponse> {
+        match self.response {
+            MethodResponse::GetCalendarEvent(response) => Ok(response),
+            MethodResponse::Error(err) => Err(err.into()),
+            _ => Err("Response type mismatch".into()),
+        }
+    }
+
+    pub fn unwrap_changes_calendar_event(self) -> crate::Result<CalendarEventChangesResponse> {
+        match self.response {
+            MethodResponse::ChangesCalendarEvent(response) => Ok(response),
+            MethodResponse::Error(err) => Err(err.into()),
+            _ => Err("Response type mismatch".into()),
+        }
+    }
+
+    pub fn unwrap_query_calendar_event(self) -> crate::Result<QueryResponse> {
+        match self.response {
+            MethodResponse::QueryCalendarEvent(response) => Ok(response),
+            MethodResponse::Error(err) => Err(err.into()),
+            _ => Err("Response type mismatch".into()),
+        }
+    }
+
+    pub fn unwrap_query_changes_calendar_event(self) -> crate::Result<QueryChangesResponse> {
+        match self.response {
+            MethodResponse::QueryChangesCalendarEvent(response) => Ok(response),
+            MethodResponse::Error(err) => Err(err.into()),
+            _ => Err("Response type mismatch".into()),
+        }
+    }
+
+    pub fn unwrap_set_calendar_event(self) -> crate::Result<CalendarEventSetResponse> {
+        match self.response {
+            MethodResponse::SetCalendarEvent(response) => Ok(response),
+            MethodResponse::Error(err) => Err(err.into()),
+            _ => Err("Response type mismatch".into()),
+        }
+    }
+
     pub fn unwrap_echo(self) -> crate::Result<serde_json::Value> {
         match self.response {
             MethodResponse::Echo(response) => Ok(response),
@@ -790,6 +912,46 @@ impl<'de> Visitor<'de> for TaggedMethodResponseVisitor {
                     .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
             ),
             Method::SetPrincipal => MethodResponse::SetPrincipal(
+                seq.next_element()?
+                    .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
+            ),
+            Method::GetCalendar => MethodResponse::GetCalendar(
+                seq.next_element()?
+                    .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
+            ),
+            Method::ChangesCalendar => MethodResponse::ChangesCalendar(
+                seq.next_element()?
+                    .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
+            ),
+            Method::QueryCalendar => MethodResponse::QueryCalendar(
+                seq.next_element()?
+                    .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
+            ),
+            Method::QueryChangesCalendar => MethodResponse::QueryChangesCalendar(
+                seq.next_element()?
+                    .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
+            ),
+            Method::SetCalendar => MethodResponse::SetCalendar(
+                seq.next_element()?
+                    .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
+            ),
+            Method::GetCalendarEvent => MethodResponse::GetCalendarEvent(
+                seq.next_element()?
+                    .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
+            ),
+            Method::ChangesCalendarEvent => MethodResponse::ChangesCalendarEvent(
+                seq.next_element()?
+                    .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
+            ),
+            Method::QueryCalendarEvent => MethodResponse::QueryCalendarEvent(
+                seq.next_element()?
+                    .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
+            ),
+            Method::QueryChangesCalendarEvent => MethodResponse::QueryChangesCalendarEvent(
+                seq.next_element()?
+                    .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
+            ),
+            Method::SetCalendarEvent => MethodResponse::SetCalendarEvent(
                 seq.next_element()?
                     .ok_or_else(|| serde::de::Error::custom("Expected a method response"))?,
             ),
